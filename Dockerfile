@@ -11,6 +11,8 @@ WORKDIR /home/container
 
 COPY package*.json /home/container
 
+RUN chown -R container /home/container
+
 RUN npm install --production
 
 COPY . /home/container
