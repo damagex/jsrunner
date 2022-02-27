@@ -19,8 +19,6 @@ COPY . .
 
 EXPOSE 8080
 
-RUN ["/bin/sh", "-c", "iptables -I DOCKER-USER -d 0.0.0.0/0 -o docker0 -j REJECT"]
-
 USER jsrunner
 
 CMD [ "node", "app.js" ]
