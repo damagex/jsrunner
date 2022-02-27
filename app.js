@@ -35,7 +35,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const createScript = (content, callback) => {
-    const filename = "run-" + new Date().getTime() + ".js";
+    const filename = "/home/jsrunner/run-" + new Date().getTime() + ".js";
     fs.writeFile(filename, content, (err) => {
         if (err) throw err;
         console.log('File is created successfully.');
@@ -63,7 +63,7 @@ const runScript = (scriptPath, callback) => {
 
 const handleRunner = (req, res) => {
     createScript(req.body.run, filename => {
-        runScript('./' + filename, (err, process) => {
+        runScript(filename, (err, process) => {
             if (err) throw err;
             logs.push({
                 type: "log",
