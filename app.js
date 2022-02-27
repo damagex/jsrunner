@@ -48,6 +48,10 @@ const exec = (run) => (`
     const switchConsole = ${switchConsole};
     const revertConsole = ${revertConsole};
     switchConsole();
+    setTimeout(() => {
+        revertConsole();
+        resolve([{type: "timeout", args: ["Timeout Error!"]}]);
+    }, 3000);
     try {
         ${run}
     } catch (err) {
@@ -60,14 +64,12 @@ const exec = (run) => (`
 const waitEval = (ev) => {
     return new Promise((resolve, reject) => {
         new Function('resolve', ev)(resolve);
-        setTimeout(() => {
-            reject([{type: "timeout", args: ["Timeout Error!"]}]);
-        }, 3000);
     });
 };
 
 const handleRunner = async (req, res) => {
     const result = await waitEval(exec(req.body.run));
+    console.log(result);
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result));
 }
