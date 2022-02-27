@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const router = express.Router();
 const app = express();
 const cors = require("cors");
-const _eval = require("_eval");
+const _eval = require("eval");
 
 let logs = []
 let changeConsole = ["log", "warn", "error"];
