@@ -38,6 +38,11 @@ app.use(cors(corsOptions))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+router.get("/test", (req, res) => {
+    res.end("hello");
+    console.log("found");
+})
+
 router.post("/run", (request, response) => {
     console.log("starting");
     switchConsole();
