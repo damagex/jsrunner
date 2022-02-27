@@ -39,6 +39,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 router.post("/run", (request, response) => {
+    console.log("starting");
     switchConsole();
     try {
         eval(request.body.run);
