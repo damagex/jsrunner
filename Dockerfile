@@ -3,14 +3,16 @@ FROM node:16-alpine
 
 RUN addgroup -S jsgroup && adduser -S container -G jsgroup
 
-WORKDIR /home/container
+USER container
 
 ENV NODE_ENV=production
 
-COPY package*.json ./
+WORKDIR /home/jsrunner
+
+COPY package*.json /home/jsrunner
 
 RUN npm install --production
 
-COPY . .
+COPY . /home/jsrunner
 
 CMD [ "node", "app.js" ]
