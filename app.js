@@ -55,6 +55,6 @@ app.use("/", router);
 const port = process.env.RUNNER_PORT || 8080;
 const host = process.env.RUNNER_HOST || "0.0.0.0";
 
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, host, () => {
     console.log("Started on " + host + ":" + port);
 })
