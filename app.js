@@ -59,10 +59,10 @@ const exec = (run) => (`
 
 const waitEval = (ev) => {
     return new Promise((resolve, reject) => {
-        new Function('resolve', ev)(resolve);
         setTimeout(() => {
             reject([{type: "timeout", args: ["Timeout Error!"]}]);
         }, 3000);
+        new Function('resolve', ev)(resolve);
     });
 };
 
