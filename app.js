@@ -45,6 +45,7 @@ const handleRunner = (req, res) => {
     const result = _eval(exec(req.body.run), "jsrunner", {
         switchConsole: switchConsole
     });
+    console.log(result);
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result));
 }
