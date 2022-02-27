@@ -3,8 +3,7 @@ const bodyParser = require("body-parser");
 const router = express.Router();
 const app = express();
 const cors = require("cors");
-const fs = require("fs");
-const childProcess = require('child_process');
+const _eval = require("_eval");
 
 let logs = []
 let changeConsole = ["log", "warn", "error"];
@@ -34,45 +33,17 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const createScript = (content, callback) => {
-    const filename = "/home/jsrunner/run-" + new Date().getTime() + ".js";
-    fs.writeFile(filename, content, (err) => {
-        if (err) throw err;
-        console.log('File is created successfully.');
-    });
-    callback(filename);
-}
-
-const runScript = (scriptPath, callback) => {
-    let invoked = false;
-    let process = childProcess.fork(scriptPath);
-
-    process.on("error", function (err) {
-        if (invoked) return;
-        invoked = true;
-        callback(err, process);
-    });
-
-    process.on("exit", function (code) {
-        if (invoked) return;
-        invoked = true;
-        const err = code === 0 ? null : new Error("exit code " + code);
-        callback(err, process);
-    });
-}
-
 const handleRunner = (req, res) => {
-    createScript(req.body.run, filename => {
-        runScript(filename, (err, process) => {
-            if (err) throw err;
-            logs.push({
-                type: "log",
-                args: process.stdout
-            })
-            res.setHeader("Content-Type", "application/json");
-            res.end(JSON.stringify(logs));
-        });
-    });
+    switchConsole();
+    try {
+        const result = _eval(req.body.run);
+        console.log(result);
+    } catch (err) {
+        console.error(err)
+    }
+    revertConsole();
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(logs));
 }
 
 router.post("/run", handleRunner);
