@@ -7,7 +7,7 @@ on:
     branches:
       - main
     paths:
-      - **
+      - .
 jobs:
   push:
     name: "damagex:jsrunner.codes"
