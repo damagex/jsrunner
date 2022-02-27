@@ -23,27 +23,30 @@ const switchConsole = () => {
     })
 }
 
-const revertConsole = () => {
-    Object.keys(defConsole).forEach(def => {
-        console[def] = defConsole[def];
-    });
-}
-
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const handleRunner = (req, res) => {
-    switchConsole();
-    try {
-        const result = _eval(req.body.run);
-        console.log(result);
-    } catch (err) {
-        console.error(err)
+const exec = (run) => (`
+    module.exports = () => {
+        let logs = [];
+        let changeConsole = ["log", "warn", "error"];
+        switchConsole();
+        try {
+            ${run}
+        } catch (err) {
+            console.error(err)
+        }
+        return logs;
     }
-    revertConsole();
+`);
+
+const handleRunner = (req, res) => {
+    const result = _eval(exec(req.body.run), "jsrunner", {
+        switchConsole: switchConsole
+    });
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(logs));
+    res.end(JSON.stringify(result));
 }
 
 router.post("/run", handleRunner);
