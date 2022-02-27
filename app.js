@@ -34,16 +34,17 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-router.post("/run", (request, response) => {
+router.post("/run", (req, res) => {
     console.log("starting");
     switchConsole();
     try {
-        eval(request.body.run);
+        eval(req.body.run);
     } catch (err) {
         console.error(err)
     }
     revertConsole();
-    response.end(JSON.stringify(logs));
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(logs));
 });
 
 // add router in the Express app.
@@ -55,3 +56,12 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 app.listen(port, host, () => {
     console.log("Started on " + host + ":" + port);
 })
+
+/*
+curl --request POST \
+  --url http://92.222.231.56:27030/run \
+  --header 'content-type: application/json' \
+  --data '{
+	"msg": "testing"
+}'
+ */
