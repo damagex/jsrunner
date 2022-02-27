@@ -52,7 +52,7 @@ const exec = (run) => (`
         revertConsole();
         resolve([{type: "timeout", args: ["Timeout Error!"]}]);
     }, 3000);
-    try {
+    try { 
         ${run}
     } catch (err) {
         console.error(JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err))))
