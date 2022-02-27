@@ -7,12 +7,12 @@ USER container
 
 ENV NODE_ENV=production
 
-WORKDIR /home/jsrunner
+WORKDIR /home/container
 
-COPY package*.json /home/jsrunner
+COPY package*.json /home/container
 
 RUN npm install --production
 
-COPY . /home/jsrunner
+COPY . /home/container
 
 CMD [ "node", "app.js" ]
