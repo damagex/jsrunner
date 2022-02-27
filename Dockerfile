@@ -17,8 +17,6 @@ RUN npm install --production
 
 COPY . .
 
-EXPOSE 8080
-
 USER jsrunner
 
 CMD [ "node", "app.js" ]

@@ -15,9 +15,12 @@ const switchConsole = () => {
     logs = [];
     changeConsole.forEach((type) => {
         defConsole[type] = console[type];
-        console[type] = function() {
+        console[type] = function () {
             let args = Array.from(arguments);
-            logs.push({ type: type, args: args });
+            logs.push({
+                type: type,
+                args: args
+            });
             defConsole[type].apply(console, args);
         }
     })
@@ -25,7 +28,7 @@ const switchConsole = () => {
 
 const revertConsole = () => {
     Object.keys(defConsole).forEach(def => {
-       console[def] = defConsole[def];
+        console[def] = defConsole[def];
     });
 }
 
@@ -49,6 +52,9 @@ router.post("/run", (request, response) => {
 // add router in the Express app.
 app.use("/", router);
 
-app.listen(8080, "0.0.0.0", (s) => {
-    console.log("Started on PORT", app.hostname, app.port, s);
+const port = process.env.RUNNER_PORT || 8080;
+const host = process.env.RUNNER_HOST || "0.0.0.0";
+
+app.listen(port, "0.0.0.0", () => {
+    console.log("Started on " + host + ":" + port);
 })
