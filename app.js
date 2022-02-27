@@ -3,10 +3,7 @@ const bodyParser = require("body-parser");
 const router = express.Router();
 const app = express();
 const cors = require("cors");
-const corsOptions = {
-    origin: "*",
-    methods: ["POST"],
-}
+app.use(cors())
 
 let logs = []
 let changeConsole = ["log", "warn", "error"];
