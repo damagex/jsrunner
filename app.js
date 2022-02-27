@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const router = express.Router();
 const app = express();
 const cors = require("cors");
-app.use(cors())
+
 
 let logs = []
 let changeConsole = ["log", "warn", "error"];
@@ -29,16 +29,10 @@ const revertConsole = () => {
     });
 }
 
-app.use(cors(corsOptions))
+app.use(cors())
 
-//Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-router.get("/test", (req, res) => {
-    res.end("hello");
-    console.log("found");
-})
 
 router.post("/run", (request, response) => {
     console.log("starting");
