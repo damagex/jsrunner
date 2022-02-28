@@ -92,19 +92,31 @@ const handleDesign = async (req, res) => {
         const height = parseInt(design.height) || 300;
         const padding = parseInt(design.padding) || 8;
         const background = design.background || "#36393F";
+        const fontSize = design.fontsize || "16px";
         const font = design.font;
+        const fontFamily = font ? "font-family: " + font + ";" : "";
         if (req.params.lang === "html") {
             res.end(`
-            <style>
-            ${font ? "@import url('https://fonts.googleapis.com/css2?family=" + font + "&display=swap');" : ""}
+
+            <html>
+              <head>
+                <link rel="stylesheet" type="text/css"
+                      href="https://fonts.googleapis.com/css?family=${font}">
+                <style>
+                  body {
+                    font-family: ${font}, serif;
+                    font-size: 48px;
+                }
             
             body {
+                ${fontFamily}
                 background: #36393F;
                 overflow: hidden;
                 margin: 0;
                 flex-wrap: wrap;
                 display: flex;
                 justify-content: center;
+                font-size: ${fontSize};
             }
             
             #update-code {
@@ -122,9 +134,11 @@ const handleDesign = async (req, res) => {
                 background: ${background};
                 padding: ${padding}px;
                 width: ${width}px;
-                height: ${height}px; 
+                height: ${height}px;
             }
-            </style>
+                </style>
+              </head>
+              <body>
             <div class="beginnercodes" id="${design.id}">
                 ${design.code}
             </div>
@@ -142,6 +156,8 @@ const handleDesign = async (req, res) => {
                     })
                 });
             </script>
+                         </body>
+            </html>
         `);
         }
     }
