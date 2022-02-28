@@ -1,6 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import fetch from "node-fetch";
+import { v4 } from "uuid";
 
 const router = express.Router();
 const app = express();
@@ -9,23 +11,23 @@ let prev = "";
 let changeConsole = ["log", "info", "warn", "error", "fatal", "timeEnd", "timeLog", "timeStamp", "table", "dir", "dirxml", "system"];
 const defConsole = {};
 const switchConsole = () => {
-    changeConsole.forEach(type => {
-        defConsole[type] = console[type];
-        console[type] = function () {
+    changeConsole.forEach(mode => {
+        defConsole[mode] = console[mode];
+        console[mode] = function () {
             let args = Array.from(arguments);
-            if (!type.includes("time") && !type.includes("table")) {
-                if (prev === "time" && type === "log") {
+            if (!mode.includes("time") && !mode.includes("table")) {
+                if (prev === "time" && mode === "log") {
                     args[0] = "Timer: " + args[0]
                     args.shift();
                 }
                 logs.push({
-                    type: type,
+                    mode: mode,
                     args: args
                 });
             }
-            prev = type;
-            type = type === "fatal" ? "error" : type;
-            defConsole[type].apply(console, args);
+            prev = mode;
+            mode = mode === "fatal" ? "error" : mode;
+            defConsole[mode].apply(console, args);
         }
     })
 }
@@ -42,35 +44,111 @@ app.use(bodyParser.json());
 
 const exec = (run) => (`
     let logs = [];
+    const defConsole = {};
     let prev = "";
     let changeConsole = [${changeConsole.map(i => "'" + i + "'")}];
-    const defConsole = {};
     const switchConsole = ${switchConsole};
-    const revertConsole = ${revertConsole};
     switchConsole();
-    try { 
+    try {
         ${run}
     } catch (err) {
         console.error(JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err))))
     }
+    const revertConsole = ${revertConsole};
     revertConsole();
     resolve(logs);
 `);
 
 const waitEval = (ev) => {
     return new Promise((resolve, reject) => {
-        new Function('resolve', ev)(resolve);
+        new Function('resolve', ev)(resolve, fetch);
     });
 };
 
-const handleRunner = async (req, res) => {
-    const result = await waitEval(exec(req.body.run));
+const handleJSRunner = async (req, res) => {
+    const result = await waitEval(exec(req.body.code));
     console.log(result);
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result));
 }
 
-router.post("/run", handleRunner);
+let designs = [];
+
+const handleHTMLRunner = async (req, res) => {
+    const uuid = v4();
+    designs.push({
+        id: uuid,
+        ...req.body,
+    })
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ id: uuid }));
+}
+
+const handleDesign = async (req, res) => {
+    const design = designs.find(d => d.id === req.params.uuid)
+    if (!design) {
+        res.end("not found!");
+    } else {
+        const width = parseInt(design.width) || 300;
+        const height = parseInt(design.height) || 300;
+        const padding = parseInt(design.padding) || 8;
+        const background = design.background || "#36393F";
+        if (req.params.lang === "html") {
+            res.end(`
+            <style>
+            body {
+                background: #36393F;
+                overflow: hidden;
+                margin: 0;
+                flex-wrap: wrap;
+                display: flex;
+                justify-content: center;
+            }
+            #update-code {
+                display: block;
+                width: 80%;
+                height: 40px;
+            }
+            
+            #code-edit {
+                width: 80%;
+                min-height: 300px;
+            }
+            .beginnercodes { 
+                background: ${background};
+                padding: ${padding}px;
+                width: ${width}px;
+                height: ${height}px; 
+            }
+            </style>
+            <div class="beginnercodes" id="${design.id}">
+                ${design.code}
+            </div>
+            <div>
+                <button id="update-code">Update</button>
+                <textarea id="code-edit">${design.code}</textarea>
+            </div>
+            <script>
+                document.getElementById("update-code").addEventListener("click", e => {
+                    e.preventDefault();
+                    const code = document.getElementById("code-edit");
+                    const live = document.getElementById("${design.id}");
+                    live.innerHTML = code.value;
+                    designs = designs.map(d => {
+                        if (d.id === design.id) d.code = code;
+                        return d;
+                    })
+                });
+            </script>
+        `);
+        }
+    }
+}
+
+router.get("/render/:lang/:uuid", handleDesign);
+router.post("/html", handleHTMLRunner);
+router.post("/js", handleJSRunner);
+router.post("/javascript", handleJSRunner);
 app.use("/", router);
 
 const port = process.env.RUNNER_PORT || 8080;
