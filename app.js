@@ -1,7 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import fetch from "node-fetch";
 import { v4 } from "uuid";
 
 const router = express.Router();
@@ -60,8 +59,8 @@ const exec = (run) => (`
 `);
 
 const waitEval = (ev) => {
-    return new Promise((resolve, reject) => {
-        new Function('resolve', ev)(resolve, fetch);
+    return new Promise((resolve) => {
+        new Function('resolve', ev)(resolve);
     });
 };
 
@@ -93,9 +92,12 @@ const handleDesign = async (req, res) => {
         const height = parseInt(design.height) || 300;
         const padding = parseInt(design.padding) || 8;
         const background = design.background || "#36393F";
+        const font = design.font;
         if (req.params.lang === "html") {
             res.end(`
             <style>
+            ${font ? "@import url('https://fonts.googleapis.com/css2?family=" + font + "&display=swap');" : ""}
+            
             body {
                 background: #36393F;
                 overflow: hidden;
@@ -104,6 +106,7 @@ const handleDesign = async (req, res) => {
                 display: flex;
                 justify-content: center;
             }
+            
             #update-code {
                 display: block;
                 width: 80%;
@@ -111,9 +114,10 @@ const handleDesign = async (req, res) => {
             }
             
             #code-edit {
-                width: 80%;
-                min-height: 300px;
+                width: 80% !important;
+                height: 300px !important;
             }
+            
             .beginnercodes { 
                 background: ${background};
                 padding: ${padding}px;
@@ -124,10 +128,8 @@ const handleDesign = async (req, res) => {
             <div class="beginnercodes" id="${design.id}">
                 ${design.code}
             </div>
-            <div>
                 <button id="update-code">Update</button>
                 <textarea id="code-edit">${design.code}</textarea>
-            </div>
             <script>
                 document.getElementById("update-code").addEventListener("click", e => {
                     e.preventDefault();
