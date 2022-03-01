@@ -106,7 +106,7 @@ const handleDesign = async (req, res) => {
                   body {
                 font-family: "${font.split("+").join(" ")}", serif;
                 color: ${color};
-                background: #36393F;
+                background: ${background};
                 overflow: hidden;
                 margin: 0;
                 flex-wrap: wrap;
@@ -127,7 +127,6 @@ const handleDesign = async (req, res) => {
             }
             
             .beginnercodes { 
-                background: ${background};
                 padding: ${padding}px;
                 width: ${width}px;
                 height: ${height}px;
