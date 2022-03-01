@@ -105,7 +105,7 @@ const handleDesign = async (req, res) => {
                 <style>
                   body {
                 font-family: ${font}, serif;
-                color: ${color}
+                color: ${color};
                 background: #36393F;
                 overflow: hidden;
                 margin: 0;
