@@ -88,13 +88,22 @@ const handleDesign = async (req, res) => {
     if (!design) {
         res.end("not found!");
     } else {
-        const width = parseInt(design.width) || 300;
-        const height = parseInt(design.height) || 300;
-        const padding = parseInt(design.padding) || 8;
+        let width = design.width || "auto";
+        let height = design.height || "auto";
+        const padding = design.padding || "8px";
         const background = design.background || "#36393F";
         const fontSize = design.fontsize || "16px";
         const font = design.font || "Poppins";
         const color = design.color || "#000";
+
+        if (parseInt(height) > 800) {
+            height = "800px";
+        }
+
+        if (parseInt(width) > 800) {
+            width = "800px";
+        }
+
         if (req.params.lang === "html") {
             res.end(`
 
@@ -103,15 +112,12 @@ const handleDesign = async (req, res) => {
                 <link rel="stylesheet" type="text/css"
                       href="https://fonts.googleapis.com/css?family=${font}">
                 <style>
-                  body {
+            body {
                 font-family: "${font.split("+").join(" ")}", serif;
                 color: ${color};
                 background: ${background};
                 overflow: hidden;
                 margin: 0;
-                flex-wrap: wrap;
-                display: flex;
-                justify-content: center;
                 font-size: ${fontSize};
             }
             
@@ -127,9 +133,10 @@ const handleDesign = async (req, res) => {
             }
             
             .beginnercodes { 
-                padding: ${padding}px;
-                width: ${width}px;
-                height: ${height}px;
+                padding: ${padding};
+                width: ${width};
+                height: ${height};
+                display: inline-block;
             }
                 </style>
               </head>
