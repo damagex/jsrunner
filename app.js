@@ -94,7 +94,6 @@ const handleDesign = async (req, res) => {
         const background = design.background || "#36393F";
         const fontSize = design.fontsize || "16px";
         const font = design.font;
-        const fontFamily = font ? "font-family: " + font + ";" : "";
         if (req.params.lang === "html") {
             res.end(`
 
@@ -106,10 +105,7 @@ const handleDesign = async (req, res) => {
                   body {
                     font-family: ${font}, serif;
                     font-size: 48px;
-                }
-            
-            body {
-                ${fontFamily}
+
                 background: #36393F;
                 overflow: hidden;
                 margin: 0;
