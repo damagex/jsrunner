@@ -144,6 +144,15 @@ const handleDesign = async (req, res) => {
             <div class="beginnercodes" id="${design.id}">
                 ${design.code}
             </div>
+
+                         </body>
+            </html>
+        `);
+        }
+    }
+}
+
+/*
                 <button id="update-code">Update</button>
                 <textarea id="code-edit">${design.code}</textarea>
             <script>
@@ -158,12 +167,7 @@ const handleDesign = async (req, res) => {
                     })
                 });
             </script>
-                         </body>
-            </html>
-        `);
-        }
-    }
-}
+ */
 
 router.get("/render/:lang/:uuid", handleDesign);
 router.post("/html", handleHTMLRunner);
