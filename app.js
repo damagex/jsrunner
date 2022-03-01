@@ -104,7 +104,7 @@ const handleDesign = async (req, res) => {
                       href="https://fonts.googleapis.com/css?family=${font}">
                 <style>
                   body {
-                font-family: ${font}, serif;
+                font-family: "${font.split("+").join(" ")}", serif;
                 color: ${color};
                 background: #36393F;
                 overflow: hidden;
