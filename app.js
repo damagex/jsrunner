@@ -93,7 +93,8 @@ const handleDesign = async (req, res) => {
         const padding = parseInt(design.padding) || 8;
         const background = design.background || "#36393F";
         const fontSize = design.fontsize || "16px";
-        const font = design.font;
+        const font = design.font || "Poppins";
+        const color = design.color || "#000";
         if (req.params.lang === "html") {
             res.end(`
 
@@ -103,9 +104,8 @@ const handleDesign = async (req, res) => {
                       href="https://fonts.googleapis.com/css?family=${font}">
                 <style>
                   body {
-                    font-family: ${font}, serif;
-                    font-size: 48px;
-
+                font-family: ${font}, serif;
+                color: ${color}
                 background: #36393F;
                 overflow: hidden;
                 margin: 0;
